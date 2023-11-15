@@ -64,49 +64,38 @@ public class Main{
         }
         return ans;
     }
-    private static int solve(int m,int n){
-        int[][] dp;
-        if(m>n){
-            dp=new int[m+1][m+1];
-        }else{
-            dp=new int[n+1][n+1];
-        }
-        int k=0;
-        for(int i=1;i<=(m>n?m:n);i++){
-            dp[1][i]=k;
-            k++;
-        }
-        k=0;
-        for(int i=1;i<=(m>n?m:n);i++){
-            dp[i][1]=k;
-            k++;
-        }
-        for(int i=2;i<=m;i++){
-            for(int j=2;j<=n;j++){
-                if(i==j){
-                    dp[i][j]=0;
-                }else{
-                    if(i*2==j || j*2==i){
-                        dp[i][j]=1;
-                    }else{
-                        int min=Integer.MAX_VALUE;
-                        //check vertically 
-                        for(k=1;k<i;k++){
-                            min=Math.min(dp[k][j]+dp[i-k][j], min);
-                        }
-                        for(k=1;k<j;k++){
-                            min=Math.min(min,dp[i][k]+dp[i][j-k]);
-                        }
-                        min++;
-                        dp[i][j]=min;
-                        dp[j][i]=min;
-                        //check horizontally
-                    }
+    static int solveBottomUp(int n,int[] arr){
+        int[] dp=new int[n+1];
+        dp[n-1]=1;
+        //System.out.println(Arrays.toString(dp));
+        for(int i=n-2;i>=0;i--){
+            //System.out.println(i);
+            int max=0;
+            for(int j=i+1;j<n;j++){
+                if(arr[i]<arr[j]){
+                    max=Math.max(max,dp[j]);
                 }
+                
+            }
+            dp[i]=1+max;
+        }
+        
+        return findMax(dp);
+    }
+    public static int findMax(int[] arr) {
+        if (arr == null || arr.length == 0) {
+            throw new IllegalArgumentException("Input array is empty or null.");
+        }
+    
+        int max = arr[0]; // Initialize max to the first element
+    
+        for (int i = 1; i < arr.length; i++) {
+            if (arr[i] > max) {
+                max = arr[i];
             }
         }
-        //System.out.println(Arrays.deepToString(dp));
-        return dp[m][n];
+    
+        return max;
     }
 	
     public static void main(String[] args) {
@@ -115,11 +104,14 @@ public class Main{
             FastWriter out = new FastWriter();
             
            
+			int n=Integer.parseInt(in.nextLine());
 			int[] arr=string_to_array(in.nextLine().split(" "));
-			out.println(solve(arr[0], arr[1]));	
-			
+            
+			out.println(solveBottomUp(n,arr));
+            
             out.close();
         } catch (Exception e) {
+            System.out.println(e);
             return;
         }
     }
